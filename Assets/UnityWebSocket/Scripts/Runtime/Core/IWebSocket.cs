@@ -76,6 +76,7 @@ namespace UnityWebSocket
         /// <paramref name="data"/> is <see langword="null"/>.
         /// </exception>
         void SendAsync(byte[] data);
+        void SendAsync(byte[] data, int length);
 
         /// <summary>
         /// Sends the specified data using the WebSocket connection.

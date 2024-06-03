@@ -101,6 +101,13 @@ namespace UnityWebSocket
             SendBufferAsync(buffer);
         }
 
+        public void SendAsync(byte[] data, int length)
+        {
+            if (!isOpening) return;
+            var buffer = new SendBuffer(data, WebSocketMessageType.Binary, length);
+            SendBufferAsync(buffer);
+        }
+
         public void SendAsync(string text)
         {
             if (!isOpening) return;
@@ -139,10 +146,12 @@ namespace UnityWebSocket
         {
             public byte[] data;
             public WebSocketMessageType type;
-            public SendBuffer(byte[] data, WebSocketMessageType type)
+            public int length;
+            public SendBuffer(byte[] data, WebSocketMessageType type, int length=0)
             {
                 this.data = data;
                 this.type = type;
+                this.length = length>0 ? length : data.Length;
             }
         }
 
@@ -193,7 +202,7 @@ namespace UnityWebSocket
                     else
                     {
                         Log($"Send, type: {buffer.type}, size: {buffer.data.Length}, queue left: {sendQueue.Count}");
-                        await socket.SendAsync(new ArraySegment<byte>(buffer.data), buffer.type, true, CancellationToken.None);
+                        await socket.SendAsync(new ArraySegment<byte>(buffer.data, 0, buffer.length), buffer.type, true, CancellationToken.None);
                     }
                 }
             }
